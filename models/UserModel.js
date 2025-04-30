@@ -2,7 +2,7 @@
 
 const db = require("../config/db"); // Importar la conexión a la base de datos
 
-// Buscar un usuario por el email
+// Buscar un usuario por el email para el registro
 const findUserByEmail = async (email) => {
   const [rows] = await db
     .promise()

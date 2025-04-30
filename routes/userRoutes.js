@@ -3,9 +3,10 @@ const express = require("express"); // Acceder a la librería de express para cr
 const router = express.Router(); // Crear un enrutador de express
 
 //Llamar las funciones de usuario
-const UserController = require("../models/UserController");
+const UserController = require("../controllers/UserController");
 
 // Ruta de registro de usuario
 router.post("/register", UserController.register);
+router.post("/login", UserController.login);
 
 module.exports = router;
