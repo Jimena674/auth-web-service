@@ -22,8 +22,9 @@ const register = async function (req, res) {
     }
 
     // Encripar la constraseña
+    const clearPassword = String(password).trim(); // Convertir a string y eliminar espacios
     const salt = await bcrypt.genSalt(10); // String aleatorio
-    const hashedPassword = await bcrypt.hash(password.toString(), salt); // Variable que va a reemplazar el password
+    const hashedPassword = await bcrypt.hash(clearPassword, salt); // Variable que va a reemplazar el password
 
     // Crear usuario
     await UserModel.createUser(email, hashedPassword);
@@ -36,7 +37,7 @@ const register = async function (req, res) {
 };
 
 //Función de Iniciar sesión
-const login = async function (req, res) {
+const login = async (req, res) => {
   try {
     // Datos enviados por el usuario
     const { email, password } = req.body;
@@ -57,10 +58,14 @@ const login = async function (req, res) {
     }
 
     // Comparar contraseña ingresada con la almacenada
-    const validPassword = await bcrypt.compare(password, searchUser.password);
+    const enteredPassword = String(password).trim(); // Convertir a string y eliminar espacios
+    const validPassword = await bcrypt.compare(
+      enteredPassword,
+      searchUser.password
+    );
     console.log("Contraseña válida:", validPassword);
     if (!validPassword) {
-      console.log("Contraseña inválida.");
+      console.log("Contraseña incorrecta.");
       return res.status(400).json({ message: "Contraseña incorrecta." });
     }
 
