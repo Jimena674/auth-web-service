@@ -41,8 +41,8 @@ const login = async (req, res) => {
   try {
     // Datos enviados por el usuario
     const { email, password } = req.body;
-    console.log("Email:", email);
-    console.log("Contraseña:", password);
+    console.log("Email enviado:", email);
+    console.log("Contraseña enviada:", password);
 
     // Validar la entrada de datos
     if (!email || !password) {
@@ -50,19 +50,16 @@ const login = async (req, res) => {
         .status(400)
         .json({ error: "Todos los campos son requeridos." });
     }
+
     // Buscar el usuario
-    const searchUser = await UserModel.findUserByEmail(email);
-    console.log("Usuario encontrado:", searchUser);
-    if (!searchUser) {
+    const user = await UserModel.findUserByEmail(email);
+    console.log("Usuario encontrado:", user);
+    if (!user) {
       return res.status(400).json({ message: "Usuario no encontrado." });
     }
 
     // Comparar contraseña ingresada con la almacenada
-    const enteredPassword = String(password).trim(); // Convertir a string y eliminar espacios
-    const validPassword = await bcrypt.compare(
-      enteredPassword,
-      searchUser.password
-    );
+    const validPassword = await bcrypt.compare(password, user.password);
     console.log("Contraseña válida:", validPassword);
     if (!validPassword) {
       console.log("Contraseña incorrecta.");
@@ -71,11 +68,60 @@ const login = async (req, res) => {
 
     res.status(200).json({ message: "Inicio de sesión exitoso." });
   } catch (error) {
+    console.error("Error al iniciar sesión.", error);
     res.status(500).json({ message: "Error en el servidor.", error });
+  }
+};
+
+// Función para actualizar el usuario
+const updateUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { email, password } = req.body;
+
+    const updateData = {};
+
+    if (email) {
+      updateData.email = email.trim();
+    }
+    if (password) {
+      const hashed = await bcrypt.hash(password, 10);
+      updateData.password = hashed;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ error: "No hay datos para actualizar." });
+    }
+
+    await UserModel.updateUserById(userId, updateData);
+
+    res.status(200).json({ message: "Usuario actualizado con éxito." });
+  } catch (error) {
+    console.error("Error al actualizar el usuario.", error);
+    res.status(500).json({ error: "Error en el servidor." });
+  }
+};
+
+// Función para eliminar un usuario
+const deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const result = await UserModel.deleteUserById(userId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado." });
+    }
+
+    res.json({ message: "Usuario eliminado con éxito." });
+  } catch (error) {
+    console.error("Error al eliminar el usuario.", error);
+    res.status(500).json({ error: "Error en el servidor." });
   }
 };
 
 module.exports = {
   register,
   login,
+  updateUser,
+  deleteUser,
 };

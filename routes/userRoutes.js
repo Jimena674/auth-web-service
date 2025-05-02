@@ -8,5 +8,7 @@ const UserController = require("../controllers/UserController");
 // Ruta de registro de usuario
 router.post("/register", UserController.register);
 router.post("/login", UserController.login);
+router.put("/:id", UserController.updateUser);
+router.delete("/:id", UserController.deleteUser);
 
 module.exports = router;
