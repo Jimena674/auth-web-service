@@ -45,11 +45,18 @@ const deleteUserById = async (id) => {
   return result;
 };
 
-// Consultar un usuario por id
+// Encontrar un usuario por id
+const findUserById = async (id) => {
+  const [rows] = await db
+    .promise()
+    .query("SELECT * FROM users WHERE id = ?", [id]);
+  return rows[0]; //Devuelve el primer usuario encontrado
+};
 
 module.exports = {
   findUserByEmail,
   createUser,
   updateUserById,
   deleteUserById,
+  findUserById,
 };

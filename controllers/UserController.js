@@ -73,7 +73,7 @@ const login = async (req, res) => {
   }
 };
 
-// Función para actualizar el usuario
+// Función para actualizar un usuario con el id
 const updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -102,7 +102,7 @@ const updateUser = async (req, res) => {
   }
 };
 
-// Función para eliminar un usuario
+// Función para eliminar un usuario con el id
 const deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -119,9 +119,29 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Función para obtener los datos de un usuario por el email
+const getUser = async (req, res) => {
+  try {
+    //Datos que ingresa el usuario
+    const userId = req.params.id;
+    // Buscar el usuario
+    const user = await UserModel.findUserById(userId);
+    console.log("El usuario encontrado es: ", user);
+    // En caso de que no exista el usuario
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+    res.json({ message: "Usuario encontrado, los datos son: ", user });
+  } catch (error) {
+    console.error("Error al buscar el usuario.", error);
+    res.status(500).json({ error: "Error en el servidor." });
+  }
+};
+
 module.exports = {
   register,
   login,
   updateUser,
   deleteUser,
+  getUser,
 };
