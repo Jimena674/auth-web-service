@@ -119,14 +119,13 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// Función para obtener los datos de un usuario por el email
+// Función para obtener los datos de un usuario por el id
 const getUser = async (req, res) => {
   try {
     //Datos que ingresa el usuario
     const userId = req.params.id;
     // Buscar el usuario
     const user = await UserModel.findUserById(userId);
-    console.log("El usuario encontrado es: ", user);
     // En caso de que no exista el usuario
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado." });
